@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Request, status
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func, text
@@ -13,6 +14,7 @@ from .database import Base, engine, get_db
 import os
 
 
+BASE_SOURCE_DIR = Path(__file__).resolve().parent  # например, папка app
 DEFAULT_POST_IMAGE = "/static/post-images/default.svg"
 FLAG = os.getenv("FLAG")
 
@@ -67,7 +69,7 @@ def home(
         .order_by(models.Post.created_at.desc(), models.Post.id.desc())
         .all()
     )
-    
+
     last_user_galaxy_number = 0
     if current_user is not None:
         last_user_galaxy_number = (
@@ -85,6 +87,27 @@ def home(
         current_user=current_user,
         last_user_galaxy_number=last_user_galaxy_number,
         flag=FLAG
+    )
+
+
+
+@app.get("/source/{filename}")
+def read_source_file(filename: str):
+    if "/" in filename or "\\" in filename:
+        raise HTTPException(status_code=403, detail="Subdirectories are not allowed")
+
+    target = BASE_SOURCE_DIR / filename
+
+    if target.suffix != ".py":
+        raise HTTPException(status_code=400, detail="Only .py files are allowed")
+
+    if not target.exists() or not target.is_file():
+        raise HTTPException(status_code=404, detail="File not found")
+
+    return FileResponse(
+        path=target,
+        media_type="text/plain; charset=utf-8",
+        filename=target.name,
     )
 
 
