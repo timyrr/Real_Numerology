@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Профиль — Real Numerology{% endblock %}
+{% block content %}
+<section class="profile-layout">
+    <section class="card profile-header">
+        <span class="eyebrow">Личный кабинет</span>
+        <h1>Профиль @{{ current_user.username }}</h1>
+    </section>
+
+    <section class="card form-card sticky-card">
+        <h2>Новый пост</h2>
+        <form action="/posts" method="post" class="post-form">
+            <label>
+                <span>Заголовок</span>
+                <input type="text" name="title" maxlength="150" required>
+            </label>
+            <label>
+                <span>Текст поста</span>
+                <textarea name="content" rows="7" required></textarea>
+            </label>
+            <label>
+                <span>Ссылка на фотографию</span>
+                <input type="url" name="image_url" placeholder="/static/post-images/default.svg или https://...">
+            </label>
+            <button type="submit">Опубликовать</button>
+        </form>
+    </section>
+</section>
+
+<section class="section-head">
+    <div>
+        <span class="eyebrow">Мои публикации</span>
+        <h2>Ваши посты</h2>
+    </div>
+</section>
+
+<section class="posts-grid">
+    {% for post in posts %}
+        <article class="card post-card">
+            <a class="post-cover-link" href="/posts/{{ post.id }}">
+                <img class="post-cover" src="{{ post.image_url or default_post_image }}" alt="Изображение к посту {{ post.title }}" onerror="this.onerror=null;this.src='{{ default_post_image }}';">
+            </a>
+            <div class="post-meta">
+                <span>Мой пост</span>
+                <span>{{ post.created_at.strftime('%d.%m.%Y %H:%M') if post.created_at else '' }}</span>
+            </div>
+            <h2><a class="post-title-link" href="/posts/{{ post.id }}">{{ post.title }}</a></h2>
+            <p class="post-content post-excerpt">{{ post.content[:170] }}{% if post.content|length > 170 %}…{% endif %}
+            </p>
+            <div class="post-actions">
+                <a class="ghost-link" href="/posts/{{ post.id }}">Открыть пост</a>
+                <form action="/posts/{{ post.id }}/delete" method="post">
+                    <button type="submit" class="danger-button">Удалить</button>
+                </form>
+            </div>
+        </article>
+    {% else %}
+        <div class="card empty-state">
+            <p>У вас пока нет постов.</p>
+        </div>
+    {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,32 @@
+services:
+  web:
+    build: ../Real_Numerology
+    container_name: web
+    ports:
+      - "8000:8000"
+    environment:
+      FLAG: "practice{g4l4xY_1s_5p!kin9_wi7h_u}"
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/posts_db
+      SECRET_KEY: change-me
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    container_name: db
+    environment:
+      POSTGRES_DB: posts_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d posts_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+volumes:
+  postgres_data:

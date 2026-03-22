@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Главная — Real Numerology{% endblock %}
+{% block content %}
+<section class="hero hero-layout">
+    <div class="card hero-main">
+        <span class="eyebrow">Нумерология • Вселенная • Послания</span>
+        <h1>Лента постов с точными значениями окружающих нас чисел, о которых мы даже не задумываемся</h1>
+        <p>Читайте заметки, открывайте полные страницы постов и смотрите фотографии прямо в ленте.</p>
+        <div class="hero-actions">
+            {% if current_user %}
+                <a class="button-link" href="/profile">Создать пост</a>
+            {% else %}
+                <a class="button-link" href="/register">Начать писать</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="hero-stats">
+        <div class="card stat-card">
+            <span>Пользователей нашего сайта</span>
+            <strong>762524</strong>
+        </div>
+        <div class="card stat-card">
+            <span>Последнее <b>Магическое число</b>, которое получил пользователь</span>
+            <strong>
+                {% if last_galaxy_number %}
+                    {{ last_galaxy_number.number }}
+                {% else %}
+                    —
+                {% endif %}
+            </strong>
+            <b>
+                {% if last_galaxy_number.number == 99772 %}
+                    {{ flag }}
+                {% endif %}
+            </b>
+
+
+</div>
+    </div>
+</section>
+
+<section class="posts-grid">
+    {% for post in posts %}
+        <article class="card post-card">
+            <a class="post-cover-link" href="/posts/{{ post.id }}">
+                <img class="post-cover" src="{{ post.image_url or default_post_image }}" alt="Изображение к посту {{ post.title }}" onerror="this.onerror=null;this.src='{{ default_post_image }}';">
+            </a>
+            <div class="post-meta">
+                <span>@{{ post.author.username }}</span>
+                <span>{{ post.created_at.strftime('%d.%m.%Y %H:%M') if post.created_at else '' }}</span>
+            </div>
+            <h2><a class="post-title-link" href="/posts/{{ post.id }}">{{ post.title }}</a></h2>
+            <p class="post-content post-excerpt">{{ post.content[:170] }}{% if post.content|length > 170 %}…{% endif %}</p>
+            <div class="post-actions">
+                <a class="ghost-link" href="/posts/{{ post.id }}">Открыть пост</a>
+                {% if current_user and current_user.id == post.user_id %}
+                    <form action="/posts/{{ post.id }}/delete" method="post">
+                        <button type="submit" class="danger-button">Удалить</button>
+                    </form>
+                {% endif %}
+            </div>
+        </article>
+    {% else %}
+        <div class="card empty-state">
+            <p>Постов пока нет. Станьте первым автором.</p>
+        </div>
+    {% endfor %}
+</section>
+{% endblock %}

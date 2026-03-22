@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.title }} — Real Numerology{% endblock %}
+{% block content %}
+<article class="detail-layout">
+    <section class="card detail-main">
+        <div class="post-meta detail-meta">
+            <span>@{{ post.author.username }}</span>
+            <span>{{ post.created_at.strftime('%d.%m.%Y %H:%M') if post.created_at else '' }}</span>
+        </div>
+        <h1 class="detail-title">{{ post.title }}</h1>
+        <img class="detail-cover" src="{{ post.image_url or default_post_image }}" alt="Изображение к посту {{ post.title }}" onerror="this.onerror=null;this.src='{{ default_post_image }}';">
+        <div class="post-content detail-content">
+         {{ post.content }}</div>
+        <div class="post-actions detail-actions">
+            <a class="ghost-link" href="/">Вернуться к ленте</a>
+            {% if current_user and current_user.id == post.user_id %}
+                <form action="/posts/{{ post.id }}/delete" method="post">
+                    <button type="submit" class="danger-button">Удалить пост</button>
+                </form>
+            {% endif %}
+        </div>
+    </section>
+
+    <aside class="detail-sidebar">
+        <section class="card sidebar-card">
+            <span class="eyebrow">Автор</span>
+            <h2>@{{ post.author.username }}</h2>
+        </section>
+
+        <section class="card sidebar-card">
+            <span class="eyebrow">Ещё в ленте</span>
+            <div class="mini-list">
+                {% for item in related_posts %}
+                    <a class="mini-post" href="/posts/{{ item.id }}">
+                        <img src="{{ item.image_url or default_post_image }}" alt="{{ item.title }}" onerror="this.onerror=null;this.src='{{ default_post_image }}';">
+                        <div>
+                            <strong>{{ item.title }}</strong>
+                            <span>@{{ item.author.username }}</span>
+                        </div>
+                    </a>
+                {% else %}
+                    <p class="empty-state">Пока нет других постов.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </aside>
+</article>
+{% endblock %}

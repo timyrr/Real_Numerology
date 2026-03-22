@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Вход — Real Numerology{% endblock %}
+{% block content %}
+<section class="form-wrapper card narrow-card auth-card">
+    <span class="eyebrow">Авторизация</span>
+    <h1>Вход</h1>
+    {% if error %}<p class="error-message">{{ error }}</p>{% endif %}
+    <form action="/login" method="post" class="auth-form">
+        <label>
+            <span>Логин</span>
+            <input type="text" name="username" required>
+        </label>
+        <label>
+            <span>Пароль</span>
+            <input type="password" name="password" required>
+        </label>
+        <button type="submit">Войти</button>
+    </form>
+</section>
+{% endblock %}
