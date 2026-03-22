@@ -22,14 +22,14 @@
         <div class="card stat-card">
             <span>Последнее <b>Магическое число</b>, которое получил пользователь</span>
             <strong>
-                {% if last_galaxy_number %}
-                    {{ last_galaxy_number.number }}
+                {% if last_user_galaxy_number %}
+                    {{ last_user_galaxy_number.number }}
                 {% else %}
-                    —
+                    31337
                 {% endif %}
             </strong>
             <b>
-                {% if last_galaxy_number.number == 99772 %}
+                {% if last_user_galaxy_number.number == 99772 %}
                     {{ flag }}
                 {% endif %}
             </b>

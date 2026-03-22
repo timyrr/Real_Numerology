@@ -67,22 +67,23 @@ def home(
         .order_by(models.Post.created_at.desc(), models.Post.id.desc())
         .all()
     )
+    
+    last_user_galaxy_number = 0
+    if current_user is not None:
+        last_user_galaxy_number = (
+            db.query(models.GalaxyNumber)
+            .where(models.GalaxyNumber.user_id == current_user.id)
+            .order_by(models.GalaxyNumber.created_at.desc(), models.GalaxyNumber.id.desc())
+            .first()
+        )
 
-    total_posts = db.query(func.count(models.Post.id)).scalar() or 0
-
-    last_galaxy_number = (
-        db.query(models.GalaxyNumber)
-        .order_by(models.GalaxyNumber.created_at.desc(), models.GalaxyNumber.id.desc())
-        .first()
-    )
 
     return render_template(
         request,
         "index.html",
         posts=posts,
         current_user=current_user,
-        total_posts=total_posts,
-        last_galaxy_number=last_galaxy_number,
+        last_user_galaxy_number=last_user_galaxy_number,
         flag=FLAG
     )
 
